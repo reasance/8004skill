@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.2] - 2026-10-23
+
+### Changed
+- The GitHub repository moved from `matteoscurati/8004skill` to `reasance/8004skill`. `repository` and `homepage` in `package.json`, the `SKILL.md` homepage, the `npx 8004skill` help text, and every install and clone command in the docs now use the new URL. The old URLs still redirect on GitHub, but use `npx skills add reasance/8004skill -g` and `git clone https://github.com/reasance/8004skill.git` from now on.
+
 ## [2.3.1] - 2026-10-23
 
 ### Fixed

@@ -9,7 +9,7 @@
 ## Setup
 
 ```bash
-git clone https://github.com/matteoscurati/8004skill.git
+git clone https://github.com/reasance/8004skill.git
 cd 8004skill
 npm install
 ```

@@ -6,13 +6,13 @@ allowed-tools: "Bash(npx:*) Bash(npm:*) Bash(mkdir:*) Bash(chmod:*) Read"
 compatibility: Requires Node.js 22+, macOS or Linux. Scripts executed via npx tsx.
 metadata:
   author: matteoscurati
-  version: "2.3.1"
+  version: "2.3.2"
   npm:
     package: 8004skill
     postInstall: npm install --omit=dev
   openclaw:
     emoji: "🔗"
-    homepage: https://github.com/matteoscurati/8004skill
+    homepage: https://github.com/reasance/8004skill
     os: [darwin, linux]
     requires:
       bins: [node, npx]

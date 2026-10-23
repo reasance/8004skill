@@ -699,7 +699,7 @@ ${BOLD}Examples:${NC}
   npx ${SKILL_NAME} doctor         # Check environment
 
 ${BOLD}More info:${NC}
-  https://github.com/matteoscurati/8004skill
+  https://github.com/reasance/8004skill
 `);
 }
 

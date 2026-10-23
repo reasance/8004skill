@@ -83,7 +83,7 @@ export function isMainScript(importMetaUrl: string): boolean {
 
 // ── Script version ──────────────────────────────────────────────────
 
-export const SCRIPT_VERSION = '2.3.1';
+export const SCRIPT_VERSION = '2.3.2';
 
 // ── CLI argument parsing ────────────────────────────────────────────
 

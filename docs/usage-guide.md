@@ -15,7 +15,7 @@
 For the widest agent compatibility, the recommended install path is via Skills CLI:
 
 ```bash
-npx skills add matteoscurati/8004skill -g
+npx skills add reasance/8004skill -g
 ```
 
 For the built-in installer flow specific to 8004skill, use npx:
@@ -29,7 +29,7 @@ The built-in installer downloads the skill, installs production dependencies, an
 **From source (git clone):**
 
 ```bash
-git clone https://github.com/matteoscurati/8004skill.git
+git clone https://github.com/reasance/8004skill.git
 cd 8004skill
 ./install.sh          # or: node bin/cli.mjs install
 ```

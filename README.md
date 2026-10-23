@@ -43,7 +43,7 @@ See the **[Usage Guide](docs/usage-guide.md)** for agent-specific setup and work
 ### Via Skills CLI (Recommended)
 
 ```bash
-npx skills add matteoscurati/8004skill -g
+npx skills add reasance/8004skill -g
 ```
 
 Universal install via the [Vercel Skills CLI](https://github.com/vercel-labs/skills). Supports Claude Code, Cursor, Codex, and 35+ more agents. Symlinks the skill into your agent's skill directory.
@@ -59,7 +59,7 @@ Downloads the skill, installs dependencies, and links it to your agent. Supports
 ### From source
 
 ```bash
-git clone https://github.com/matteoscurati/8004skill.git
+git clone https://github.com/reasance/8004skill.git
 cd 8004skill
 ./install.sh
 ```
@@ -163,7 +163,7 @@ Additional chains are deployed and usable with manual configuration (typically `
 ## Manual Installation
 
 ```bash
-git clone https://github.com/matteoscurati/8004skill.git
+git clone https://github.com/reasance/8004skill.git
 cd 8004skill
 npm install
 

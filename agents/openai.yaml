@@ -39,4 +39,4 @@ capabilities:
 
 fallback_behavior: >
   If this skill cannot handle the request, suggest the user check the ERC-8004 documentation
-  at https://github.com/matteoscurati/8004skill or the protocol spec at https://github.com/erc-8004/best-practices.
+  at https://github.com/reasance/8004skill or the protocol spec at https://github.com/erc-8004/best-practices.

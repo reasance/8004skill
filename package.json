@@ -1,15 +1,15 @@
 {
   "name": "8004skill",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "type": "module",
   "description": "AI agent skill for ERC-8004 agent economy interactions",
   "license": "GPL-3.0",
   "author": "Matteo Scurati",
   "repository": {
     "type": "git",
-    "url": "https://github.com/matteoscurati/8004skill.git"
+    "url": "https://github.com/reasance/8004skill.git"
   },
-  "homepage": "https://github.com/matteoscurati/8004skill",
+  "homepage": "https://github.com/reasance/8004skill",
   "bin": {
     "8004skill": "bin/cli.mjs"
   },
