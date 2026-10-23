@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.1] - 2026-10-23
+
+### Fixed
+- `agent0-sdk` is now installed from npm (`^1.7.1`). In 2.3.0 the dependency was `file:../../8004.dev/agent0-ts`, a path that only existed on the maintainer's machine: on any other install `node_modules/agent0-sdk` was a dangling symlink and every script failed to import the SDK. If you installed 2.3.0, run `npx 8004skill update`.
+
+### Added
+- SDK integration unit tests for read ops, write ops, A2A and x402 (267 tests total)
+
+### Changed
+- Workspace docs point at the upstream GitHub repos instead of local checkouts
+
 ## [2.3.0] - 2026-03-17
 
 ### Added
