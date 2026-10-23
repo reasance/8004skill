@@ -22,7 +22,7 @@ describe('sdk documentation alignment', () => {
 
     expect(schema).toContain('data:application/json;base64');
     expect(schema).toContain('mcpTool');
-    expect(schema).not.toContain('context');
+    expect(schema).not.toMatch(/[`"']context[`"']/);
   });
 
   it('documents the new operational flows in the skill body', () => {

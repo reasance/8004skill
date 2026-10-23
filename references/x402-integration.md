@@ -4,7 +4,7 @@
 
 ## What is X402?
 
-X402 is an HTTP-based payment protocol (HTTP 402 Payment Required) enabling pay-per-request access to agent endpoints. Payments settle in USDC on Base (chain 8453). An agent exposes a monetizable endpoint; a client discovers the price via HTTP 402 and pays on-chain to unlock the response.
+X402 is an HTTP-based payment protocol (HTTP 402 Payment Required) enabling pay-per-request access to agent endpoints. Payments settle in the token and network the server requests in its 402 response — most commonly USDC on Base (8453) or Base Sepolia (84532), but any network the SDK can map (see Chain Name Handling below) is possible. An agent exposes a monetizable endpoint; a client discovers the price via HTTP 402 and pays on-chain to unlock the response.
 
 ## Two-Tool Model
 

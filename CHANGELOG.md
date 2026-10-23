@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.3] - 2026-10-23
+
+Documentation-only release: the references the agent reads were re-checked against EIP-8004 (Draft, unchanged since 2026-01-25), `erc-8004/erc-8004-contracts` `master` (unchanged since 2026-03-06), on-chain bytecode, and agent0-sdk 1.7.1 (still the latest release). No script behavior changes.
+
+### Added
+- `references/chains.md`: 8 networks deployed upstream since March — Robinhood Chain (4663 / testnet 46630), Billions (45056 / 6913), Injective (1776 / 1439), 0G (16661 / Galileo 16602). Every listed chain was verified with `eth_getCode` on the registry addresses.
+- Validation Registry addresses (mainnet `0x8004Cc84…AB58`, testnet `0x8004Cb1B…4272`), found deployed on every chain checked, and a note on the upcoming TEE key registry (not deployed).
+- Optional endpoint domain verification (`/.well-known/agent-registration.json`) and the spec's full `services` list (web, A2A, MCP, OASF, ENS, DID, email).
+
+### Fixed
+- `references/chains.md` listed Hedera Mainnet (295), Gnosis Chiado (10200) and GOAT Testnet3 (48816) as deployed. None of them has the contracts; they are removed.
+- `references/agent-schema.md` showed the SDK's internal model (`endpoints`, `trustModels`, `x402support`) as the registration file. It now shows the published spec format (`type` registration-v1, `services`, `x402Support`, `registrations`, `supportedTrust`), with a mapping to the SDK model, the feedback file's MUST fields, and both nested (spec) and flat (SDK) enrichment fields.
+- Feedback values: the protocol stores a signed `int128` with `valueDecimals` (0-18) and sets no -100..100 range. The references now present -100..100 as this skill's rating convention, and `SKILL.md` states that tags on other scales (e.g. `responseTime`, `revenues`) cannot be submitted with `feedback.ts`. Feedback text is never on-chain.
+- A2A agent card path is `/.well-known/agent-card.json` (legacy `agent.json` as fallback), not `agent.json`.
+- Endpoint types no longer list `WALLET`; the payment wallet is the on-chain `agentWallet` (set to the owner at registration, ERC-1271 supported, cleared on transfer).
+- `references/validation-registry.md` told users to set `REGISTRY_ADDRESS_VALIDATION`, which the scripts never read. It also now warns that agent0-sdk 1.7.1's bundled ABI decodes `getValidationStatus` with 5 outputs instead of the contract's 6.
+- `references/sdk-api.md` coverage manifest: corrected the A2A entries (`messageA2A`, `loadTask`, `task.query/cancel`), the scripts that use `loadAgent`/`getWallet`/`getRegistrationFile`, and explained that `setAgentURI()` is reached through `registerHTTP()`.
+- Smaller corrections: `--chains` accepts a CSV of chain IDs and the search examples include `--chain-id`/`--rpc-url`; `TrustModel` is an enum; `sdk.getAgent` needs a subgraph; `--rpc-url` is required by every script; x402 is not limited to USDC on Base; chain counts aligned across README, architecture and answer examples; `getIdentityRegistry()`/`getVersion()` added to the contract reference.
+
 ## [2.3.2] - 2026-10-23
 
 ### Changed

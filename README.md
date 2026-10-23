@@ -158,7 +158,7 @@ The SDK supports 5 chains:
 | Base Mainnet | 8453 | Full (registry + subgraph) |
 | Base Sepolia | 84532 | Full (registry + subgraph) |
 
-Additional chains are deployed and usable with manual configuration (typically `SUBGRAPH_URL`, plus registry overrides only if needed). See [`references/chains.md`](references/chains.md) for the full list.
+The contracts are also deployed on 47 more networks (23 mainnets, 24 testnets — e.g. Arbitrum, Optimism, Avalanche, BSC, Monad, Robinhood Chain, Injective, 0G), usable with manual configuration (typically `SUBGRAPH_URL`, plus registry overrides only if needed). See [`references/chains.md`](references/chains.md) for the full list.
 
 ## Manual Installation
 

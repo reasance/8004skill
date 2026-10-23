@@ -13,10 +13,10 @@ Structure: Spec -> Implementation -> Open Questions
 ERC-8004 defines three on-chain registries for AI agents on EVM chains:
 
 - **Identity Registry** (ERC-721): Each agent is an NFT with a metadata URI pointing to its profile.
-- **Reputation Registry**: On-chain feedback (-100 to 100) with tags and optional text.
+- **Reputation Registry**: On-chain feedback (a signed value + decimals, up to 2 tags); optional details such as text live in an off-chain file.
 - **Validation Registry**: Third-party attestations from designated validators.
 
-Agents are identified by `{chainId}:{tokenId}`. Contracts deployed at deterministic addresses across 25 chains via CREATE2.
+Agents are identified by `{chainId}:{tokenId}`. Contracts deployed at the same deterministic addresses (CREATE2) on 50+ chains, mainnets and testnets.
 
 Live on 5 fully-indexed chains (Ethereum, Sepolia, Polygon, Base, Base Sepolia) with additional deployed chains via manual config. See `chains.md`.
 ```

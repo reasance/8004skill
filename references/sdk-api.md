@@ -158,7 +158,7 @@ Maps each public method to the skill script that uses it.
 | `SDK.validationRegistryAddress()` | `scripts/sdk-info.ts` |
 | `SDK.getSubgraphClient()` | `scripts/sdk-info.ts --subgraph-chain-id ...` |
 | `SDK.createAgent()` | `scripts/register.ts` |
-| `SDK.loadAgent()` | `scripts/load-agent.ts`, `scripts/connect.ts`, `scripts/update-agent.ts`, `scripts/wallet.ts` |
+| `SDK.loadAgent()` | `scripts/load-agent.ts`, `scripts/connect.ts`, `scripts/update-agent.ts`, `scripts/wallet.ts`, `scripts/a2a.ts`, `scripts/verify.ts`, `scripts/x402-status.ts` |
 | `SDK.getAgent()` | `scripts/get-agent.ts` |
 | `SDK.searchAgents()` | `scripts/search.ts` |
 | `SDK.transferAgent()` | `scripts/transfer.ts` |
@@ -186,28 +186,27 @@ Maps each public method to the skill script that uses it.
 | `Agent.removeDomain()` | `scripts/update-agent.ts` |
 | `Agent.setWallet()` | `scripts/wallet.ts --action set` |
 | `Agent.unsetWallet()` | `scripts/wallet.ts --action unset` |
-| `Agent.getWallet()` | `scripts/wallet.ts --action get`, `scripts/load-agent.ts` |
+| `Agent.getWallet()` | `scripts/wallet.ts --action get`, `scripts/load-agent.ts`, `scripts/connect.ts`, `scripts/verify.ts`, `scripts/x402-status.ts` |
 | `Agent.setActive()` | `scripts/register.ts`, `scripts/update-agent.ts` |
 | `Agent.setX402Support()` | `scripts/register.ts`, `scripts/update-agent.ts` |
 | `Agent.setTrust()` | `scripts/register.ts`, `scripts/update-agent.ts` |
 | `Agent.setMetadata()` | `scripts/update-agent.ts` |
 | `Agent.getMetadata()` | `scripts/load-agent.ts` |
 | `Agent.delMetadata()` | `scripts/update-agent.ts` |
-| `Agent.getRegistrationFile()` | `scripts/load-agent.ts` |
+| `Agent.getRegistrationFile()` | `scripts/load-agent.ts`, `scripts/connect.ts`, `scripts/verify.ts`, `scripts/x402-status.ts` |
 | `Agent.updateInfo()` | `scripts/update-agent.ts` |
 | `Agent.registerOnChain()` | `scripts/register.ts --storage onchain`, `scripts/update-agent.ts --storage onchain` |
 | `Agent.registerIPFS()` | `scripts/register.ts --storage ipfs`, `scripts/update-agent.ts --storage ipfs` |
 | `Agent.registerHTTP()` | `scripts/register.ts --storage http`, `scripts/update-agent.ts --storage http` |
-| `Agent.setAgentURI()` | `scripts/update-agent.ts --storage http` |
+| `Agent.setAgentURI()` | Indirect: `scripts/update-agent.ts --storage http` calls `registerHTTP()`, which calls `setAgentURI()` for an already-registered agent |
 | `Agent.transfer()` | Covered by `scripts/transfer.ts` via `SDK.transferAgent()` |
-
 | `SDK.request()` | `scripts/x402-pay.ts` (wraps `sdk.request()` with CLI flags) |
 | `SDK.fetchWithX402()` | Alias for `SDK.request()` — same coverage via `scripts/x402-pay.ts` |
 | `SDK.createA2AClient()` | Not yet wrapped by a skill script |
-| `Agent.messageA2A()` | Covered by `a2a.ts` via `messageA2A` (wraps `sendMessage`) |
+| `Agent.messageA2A()` | `scripts/a2a.ts --action send` |
 | `Agent.message()` | Alias for `Agent.messageA2A()` |
-| `Agent.listTasks()` | Covered by `a2a.ts` via `listTasks` |
-| `Agent.loadTask()` | Covered by `a2a.ts` via `loadTask` / `getTask` + `createTaskHandle` |
+| `Agent.listTasks()` | `scripts/a2a.ts --action list-tasks` |
+| `Agent.loadTask()` | `scripts/a2a.ts --action get-task` / `cancel-task` (then `task.query()` / `task.cancel()`) |
 
 Validation registry request/response flows remain reference-only because the public `SDK` package does not yet expose validation helpers in `v1.7.1`. See `validation-registry.md`.
 

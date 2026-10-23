@@ -1,6 +1,6 @@
 # ERC-8004 Protocol Specification
 
-> As of agent0-sdk v1.7.1, March 2026. For contract ABI and events, see `erc-8004-contracts.md`. For SDK wrapper methods, see `sdk-api.md`. For data types, see `sdk-types.md`.
+> Checked against EIP-8004 (status: **Draft**, text last revised 2026-01-25) and agent0-sdk v1.7.1, October 2026. For contract ABI and events, see `erc-8004-contracts.md`. For SDK wrapper methods, see `sdk-api.md`. For data types, see `sdk-types.md`.
 
 ## Overview
 
@@ -16,13 +16,16 @@ The agent's full identity (name, description, endpoints, capabilities) lives in 
 
 ### 2. Reputation Registry
 
-On-chain feedback for agents. Any address can submit feedback containing: Agent ID, Reviewer address, Value (-100 to 100, int128 + uint8 decimals), Tags (up to 2), Endpoint (optional), Feedback file URI (optional IPFS pointer to off-chain enrichment).
+On-chain feedback for agents. Any address can submit feedback containing: Agent ID, a signed fixed-point **value** (`int128`) with **valueDecimals** (`uint8`, 0-18), up to 2 tags, plus an optional endpoint, feedback file URI and file hash. Only `value` and `valueDecimals` are required.
 
-Self-feedback is blocked (contract reverts if sender is owner/operator). Feedback values/tags are immutable after submission — can only be revoked (marked, not deleted).
+- **Value range**: the protocol does not cap the value to -100..100. The meaning depends on the tag — e.g. `starred` 87/100 → `value 87, decimals 0`; `uptime` 99.77% → `value 9977, decimals 2`; `responseTime` 560ms → `value 560`. The **-100..100 range used by this skill** (`feedback.ts --value`, star mapping 1★=20…5★=100) is a skill convention for quality ratings, not a protocol rule.
+- **Storage**: `value`, `valueDecimals`, `tag1`, `tag2` and `isRevoked` are stored on-chain. `endpoint`, `feedbackURI` and `feedbackHash` are only emitted in the `NewFeedback` event. Free-text comments are never on-chain — they live in the off-chain feedback file.
+- **Rules**: self-feedback is blocked (the contract reverts if the sender is the owner or an approved operator). Values/tags are immutable after submission — feedback can only be revoked (marked, not deleted). Anyone can append a response (e.g. the agent showing a refund, or an aggregator flagging spam).
+- **Agents as clients**: when an agent gives feedback, it SHOULD use its `agentWallet` as the client address.
 
 ### 3. Validation Registry
 
-Third-party attestations from designated validators. Less commonly used directly — most interactions rely on Identity + Reputation. Enables trust models beyond reputation (TEE attestations, crypto-economic staking). See `validation-registry.md`.
+Third-party attestations from designated validators (response 0-100). Deployed on every chain in `chains.md`, but rarely used yet — most interactions rely on Identity + Reputation, and agent0-sdk has no validation wrappers. Enables trust models beyond reputation (TEE attestations, crypto-economic staking, zkML). See `validation-registry.md`.
 
 ## Agent Identity
 
@@ -33,22 +36,29 @@ Third-party attestations from designated validators. Less commonly used directly
 
 ### Registration File
 
-Stored on IPFS or HTTP. Contains: name, description, image, endpoints, trust models, status, owners, operators, metadata. See `agent-schema.md` for JSON schema.
+Stored on IPFS, HTTP, or fully on-chain as a base64 `data:` URI. Contains: `type` (`https://eips.ethereum.org/EIPS/eip-8004#registration-v1`), name, description, image, `services` (endpoints), `x402Support`, `active`, `registrations` (the on-chain agentId + agentRegistry this file belongs to) and `supportedTrust`. See `agent-schema.md` for the JSON schema.
+
+**Endpoint domain verification (optional)**: an agent can prove it controls an HTTPS endpoint's domain by serving `https://{domain}/.well-known/agent-registration.json` with a `registrations` entry matching its on-chain `agentRegistry` + `agentId`. Not needed when the domain already serves the agent's registration file.
 
 ### Endpoint Types
 
-| Type | Purpose | Value |
-|------|---------|-------|
-| MCP | Model Context Protocol server | URL |
-| A2A | Agent-to-Agent protocol | URL to agent card |
-| ENS | Ethereum Name Service | Domain name |
+Each entry in `services` has a `name`, an `endpoint` and an optional `version`. The spec's examples:
+
+| Name | Purpose | Endpoint |
+|------|---------|----------|
+| web | Agent website | URL |
+| A2A | Agent-to-Agent protocol | URL to agent card (`/.well-known/agent-card.json`), version e.g. `0.3.0` |
+| MCP | Model Context Protocol server | URL, version e.g. `2025-06-18` |
+| OASF | Open Agentic Schema Framework | URI to OASF record, optional `skills` / `domains` |
+| ENS | Ethereum Name Service | ENS name |
 | DID | Decentralized Identifier | DID string |
-| WALLET | On-chain wallet | Ethereum address |
-| OASF | Open Agent Skill Framework | Skills/domains slugs |
+| email | Contact | Email address |
+
+The list is open — agents may add other entries (e.g. wallet addresses on other chains). The payment wallet itself is the on-chain `agentWallet`, not a registration-file field.
 
 ### Trust Models
 
-Agents declare: `reputation`, `crypto-economic`, `tee-attestation`. See `trust-boundaries.md`.
+Agents declare them in `supportedTrust`: `reputation`, `crypto-economic`, `tee-attestation`. The field is optional — if absent or empty, the agent uses ERC-8004 for discovery only, not trust. See `trust-boundaries.md`.
 
 ## Deterministic Deployment
 
@@ -72,28 +82,28 @@ Protocol uses The Graph for efficient querying. Not all chains have indexing —
 
 | Term | Definition |
 |---|---|
-| A2A | Agent-to-Agent protocol via agent cards at `.well-known/agent.json` |
+| A2A | Agent-to-Agent protocol via agent cards at `/.well-known/agent-card.json` (older agents may still serve `/.well-known/agent.json`) |
 | Agent Card | JSON describing A2A agent capabilities/skills |
 | Agent ID | `{chainId}:{tokenId}`. Full: `eip155:{chainId}:{registryAddress}:{tokenId}` |
 | Agent URI | Pointer to registration file (IPFS, HTTP, or `data:` URI) |
-| Agent Wallet | Address linked via EIP-712 signature for payments/identity |
+| Agent Wallet | Reserved `agentWallet` metadata: payment address, set to the owner at registration, changed via EIP-712 (EOA) / ERC-1271 (contract wallet) signature, cleared on transfer |
 | CREATE2 | Deterministic deployment — same addresses across all chains |
 | EIP-712 | Typed structured data signing for wallet binding |
 | ERC-721 | NFT standard. Agent identities are ERC-721 NFTs |
 | ERC-8004 | Standard: three on-chain registries for AI agent economy |
-| Feedback | On-chain rating (-100 to 100) with tags, text, endpoint |
+| Feedback | On-chain signal: `value` + `valueDecimals`, up to 2 tags; endpoint/file URI emitted in the event; text only in the off-chain file |
 | Feedback File | IPFS document enriching feedback (text, proof of payment, MCP/A2A/OASF fields) |
 | IPFS | Decentralized storage for registration/feedback files |
 | MCP | Model Context Protocol — primary endpoint type |
-| OASF | Open Agent Skill Framework taxonomy (agntcy/oasf) |
-| Registration File | JSON profile: endpoints, trust models, metadata |
-| Reputation Summary | Aggregated: count + averageValue (-100 to 100) |
+| OASF | Open Agentic Schema Framework — skills/domains taxonomy (agntcy/oasf) |
+| Registration File | JSON profile (`type` registration-v1): services, x402Support, active, registrations, supportedTrust |
+| Reputation Summary | Aggregated: count + averageValue (scale depends on the tag; the skill's trust labels assume -100..100 quality ratings) |
 | Subgraph | The Graph indexer — eventual consistency |
 | Trust Label | Derived label based on reputation count/averageValue |
 | Trust Model | `reputation`, `crypto-economic`, or `tee-attestation` |
 | Validation Registry | Third registry for validator attestations (limited SDK support) |
 | WalletConnect | Protocol v2 for remote signing — agent never holds keys |
-| X402 | HTTP 402 payment protocol for agent endpoints via USDC on Base |
+| X402 | HTTP 402 payment protocol for agent endpoints (stablecoin payments on the network the endpoint requests, e.g. USDC on Base) |
 
 ## Further Reading
 

@@ -6,7 +6,7 @@ allowed-tools: "Bash(npx:*) Bash(npm:*) Bash(mkdir:*) Bash(chmod:*) Read"
 compatibility: Requires Node.js 22+, macOS or Linux. Scripts executed via npx tsx.
 metadata:
   author: matteoscurati
-  version: "2.3.2"
+  version: "2.3.3"
   npm:
     package: 8004skill
     postInstall: npm install --omit=dev
@@ -28,7 +28,7 @@ metadata:
 
 ERC-8004 defines three registries on EVM chains: **Identity** (ERC-721 NFTs with IPFS/HTTP metadata), **Reputation** (on-chain feedback), and **Validation** (third-party attestations). Agent ID format: `{chainId}:{tokenId}`.
 
-In the current public `agent0-sdk` package (`1.7.1`), Identity + Reputation flows are operational, and native x402 payment handling and A2A messaging are supported. Validation remains reference-only until the SDK exposes public request/response wrappers.
+In the current public `agent0-sdk` package (`1.7.1`, still the latest release as of October 2026), Identity + Reputation flows are operational, and native x402 payment handling and A2A messaging are supported. The Validation Registry is deployed on every chain but remains reference-only until the SDK exposes public request/response wrappers.
 
 ### Reference Map
 
@@ -205,9 +205,9 @@ Result: `AgentSummary[]` table (#, Agent ID, Name, MCP, A2A, Description). Offer
 
 ## Operation 5: Give Feedback
 
-**Triggers**: "give feedback", "rate agent", "review agent". Write flow. Best practices: [Reputation.md](https://github.com/erc-8004/best-practices/blob/main/Reputation.md). Star-to-scale: 1★=20…5★=100; negative values below 0. Tags: starred, reachable, uptime, successRate, responseTime, revenues, tradingYield.
+**Triggers**: "give feedback", "rate agent", "review agent". Write flow. Best practices: [Reputation.md](https://github.com/erc-8004/best-practices/blob/main/Reputation.md). Star-to-scale: 1★=20…5★=100; negative values below 0. Tags (spec examples): starred, reachable, ownerVerified, uptime, successRate, responseTime, blocktimeFreshness, revenues, tradingYield.
 
-**Input**: Agent ID, rating (-100 to 100), tags (up to 2), endpoint. Optional off-chain fields (require `--ipfs`): text, mcp-tool/prompt/resource, a2a-skills/context-id/task-id, oasf-skills/domains, proof-of-payment-json.
+**Input**: Agent ID, value (-100 to 100 — a skill limit; the protocol accepts any signed value with decimals, so tags on other scales such as `responseTime` 560 or `revenues` 560 cannot be submitted with this skill), tags (up to 2), endpoint. Optional off-chain fields (require `--ipfs`): text, mcp-tool/prompt/resource, a2a-skills/context-id/task-id, oasf-skills/domains, proof-of-payment-json.
 
 Script: `feedback.ts` — Required: `--agent-id`, `--chain-id`, `--rpc-url`, `--value`. Optional: `--tag1`, `--tag2`, `--endpoint`, `--ipfs`, `--text`, `--mcp-tool`, `--mcp-prompt`, `--mcp-resource`, `--a2a-skills`, `--a2a-context-id`, `--a2a-task-id`, `--oasf-skills`, `--oasf-domains`, `--proof-of-payment-json`.
 

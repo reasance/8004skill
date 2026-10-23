@@ -1,6 +1,6 @@
 # ERC-8004 Contract Interfaces
 
-> As of agent0-sdk v1.7.1, March 2026. For protocol overview, see `erc-8004-spec.md`.
+> Checked against `erc-8004/erc-8004-contracts` `master` (contract code unchanged since 2026-03-06; `getVersion()` returns `"2.0.0"`) and agent0-sdk v1.7.1, October 2026. For protocol overview, see `erc-8004-spec.md`.
 
 ## Identity Registry
 
@@ -20,6 +20,7 @@ function getAgentWallet(uint256 agentId) external view returns (address)
 function isAuthorizedOrOwner(address spender, uint256 agentId) external view returns (bool)
 function ownerOf(uint256 tokenId) external view returns (address)  // ERC-721
 function tokenURI(uint256 tokenId) external view returns (string memory)  // ERC-721
+function getVersion() external pure returns (string memory)  // "2.0.0"
 ```
 
 ## Reputation Registry
@@ -34,6 +35,8 @@ function appendResponse(uint256 agentId, address clientAddress, uint64 feedbackI
     string calldata responseURI, bytes32 responseHash) external
 
 // Read
+function getIdentityRegistry() external view returns (address)
+function getVersion() external pure returns (string memory)  // "2.0.0"
 function readFeedback(uint256 agentId, address clientAddress, uint64 feedbackIndex) external view
     returns (int128 value, uint8 valueDecimals, string memory tag1, string memory tag2, bool isRevoked)
 function readAllFeedback(uint256 agentId, address[] calldata clientAddresses,
@@ -47,9 +50,11 @@ function getResponseCount(uint256 agentId, address clientAddress, uint64 feedbac
     address[] calldata responders) external view returns (uint64 count)
 ```
 
+`getSummary()` requires a non-empty `clientAddresses` list (unfiltered summaries are open to Sybil/spam). The submitter of `giveFeedback()` must not be the agent owner or an approved operator.
+
 ## Validation Registry
 
-See `validation-registry.md` for contract functions (write + read), data model, and use cases.
+See `validation-registry.md` for contract functions (write + read), data model, deployed addresses, and use cases. Like Reputation, it exposes `getIdentityRegistry()` and `getVersion()`.
 
 ## Event Signatures
 

@@ -114,7 +114,7 @@ The `scripts/lib/filters.ts` module maps CLI flags to `SearchFilters` fields. CS
 |---|---|---|
 | `--active true` | `active` | boolean |
 | `--x402-support true` | `x402support` | boolean |
-| `--chains all` | `chains` | only `'all'` supported via CLI |
+| `--chains all` or `--chains 1,8453` | `chains` | `all` or CSV of chain IDs (each needs subgraph support) |
 
 ### Time
 
@@ -165,24 +165,23 @@ Mapped to `SearchFilters.feedback` (FeedbackFilters):
 **Find MCP agents on Base:**
 
 ```bash
-npx tsx scripts/search.ts --mcp-only true --chains all "MCP agents" \
-  # Then filter results by chainId 8453 (Base) in the output
+npx tsx scripts/search.ts --chain-id 8453 --rpc-url https://mainnet.base.org --mcp-only true
 ```
 
-Or with keyword:
+Across several chains:
 
 ```bash
-npx tsx scripts/search.ts --mcp-only true --keyword "base" "MCP agents on Base"
+npx tsx scripts/search.ts --chain-id 8453 --rpc-url https://mainnet.base.org --mcp-only true --chains 1,8453,137
 ```
 
 **Agents with positive feedback:**
 
 ```bash
-npx tsx scripts/search.ts --has-feedback true --min-feedback-value 50 "well-reviewed agents"
+npx tsx scripts/search.ts --chain-id 11155111 --rpc-url https://ethereum-sepolia-rpc.publicnode.com --has-feedback true --min-feedback-value 50
 ```
 
 **Active agents with A2A skills containing "translation":**
 
 ```bash
-npx tsx scripts/search.ts --active true --a2a-only true --a2a-skills translation "translation agents"
+npx tsx scripts/search.ts --chain-id 11155111 --rpc-url https://ethereum-sepolia-rpc.publicnode.com --active true --a2a-only true --a2a-skills translation
 ```

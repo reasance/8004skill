@@ -1,10 +1,10 @@
 # Supported Chains
 
-> As of agent0-sdk v1.7.1, March 2026.
+> SDK defaults as of agent0-sdk v1.7.1. Deployments checked against the `erc-8004/erc-8004-contracts` README and verified on-chain (`eth_getCode` on the registry addresses via public RPCs), October 2026.
 
 ## Default RPC URLs (v1.7.0+)
 
-Starting with v1.7.0, the SDK ships with built-in default RPC URLs for all full-support chains. This means `rpcUrl` is now **optional** in SDKConfig when targeting these chains — the SDK will use its built-in default automatically.
+Starting with v1.7.0, the SDK ships with built-in default RPC URLs for all full-support chains. This means `rpcUrl` is **optional in `SDKConfig`** when targeting these chains. The skill's scripts still require `--rpc-url` on every call — pass one of the public RPCs below if the user has no preference.
 
 To override the default RPC for any chain (e.g., to use a dedicated provider like Alchemy or Infura), use the `overrideRpcUrls` config option:
 
@@ -61,9 +61,9 @@ These chains have built-in registry addresses, subgraph URLs, and default RPC UR
 
 ## Deployed Chains (Manual Config)
 
-These chains have ERC-8004 contracts deployed (same deterministic CREATE2 addresses) but are **not yet indexed by the SDK defaults**. To use them, set `SUBGRAPH_URL` to a subgraph instance for that chain. Optionally override registry addresses with `REGISTRY_ADDRESS_IDENTITY` / `REGISTRY_ADDRESS_REPUTATION` if they differ from defaults.
+These chains have ERC-8004 contracts deployed (same deterministic CREATE2 addresses) but are **not in the SDK defaults** (no built-in subgraph or RPC). Arbitrum One/Sepolia are proposed as defaults in agent0-ts PR #41, not yet released. To use them, set `SUBGRAPH_URL` to a subgraph instance for that chain. Optionally override registry addresses with `REGISTRY_ADDRESS_IDENTITY` / `REGISTRY_ADDRESS_REPUTATION` if they differ from defaults.
 
-The public SDK defaults currently include Identity + Reputation addresses only. Validation registry addresses are not wired into the default package for these chains.
+The public SDK defaults include Identity + Reputation addresses only. The Validation Registry is deployed too (see Contract Addresses) but not wired into the SDK.
 
 ### Mainnets
 
@@ -86,9 +86,12 @@ The public SDK defaults currently include Identity + Reputation addresses only. 
 | Soneium | 1868 |
 | GOAT Network | 2345 |
 | Metis | 1088 |
-| Hedera | 295 |
 | SKALE Base | 1187947933 |
 | Shape | 360 |
+| Robinhood Chain | 4663 |
+| Billions | 45056 |
+| Injective | 1776 |
+| 0G | 16661 |
 
 ### Testnets
 
@@ -101,7 +104,6 @@ The public SDK defaults currently include Identity + Reputation addresses only. 
 | BSC Testnet | 97 |
 | Monad Testnet | 10143 |
 | Scroll Sepolia | 534351 |
-| Gnosis Chiado | 10200 |
 | Celo Sepolia | 11142220 |
 | Taiko Hoodi | 167013 |
 | MegaETH Testnet | 6343 |
@@ -110,24 +112,33 @@ The public SDK defaults currently include Identity + Reputation addresses only. 
 | Abstract Sepolia | 11124 |
 | Mantle Sepolia | 5003 |
 | Soneium Minato | 1946 |
-| GOAT Testnet3 | 48816 |
 | Metis Sepolia | 59902 |
 | Hedera Testnet | 296 |
 | SKALE Base Sepolia | 324705682 |
 | Arc Testnet | 5042002 |
 | Shape Sepolia | 11011 |
+| Robinhood Chain Testnet | 46630 |
+| Billions Testnet | 6913 |
+| Injective Testnet | 1439 |
+| 0G Galileo Testnet | 16602 |
+
+Scroll Sepolia (534351) is listed upstream but could not be re-verified in October 2026 (no working public RPC).
+
+**Not deployed** (verified: no bytecode at the registry addresses, October 2026): Hedera Mainnet (295) — only Hedera Testnet has the contracts; Gnosis Chiado (10200); GOAT Testnet3 (48816). Earlier versions of this file listed them by mistake.
 
 ## Contract Addresses
 
 All chains use deterministic CREATE2 deployment. Two address sets:
 
-**Mainnet contracts** (chains 1, 137, 8453, 42161, 10, 43114, 56, 143, 534352, 100, 42220, 167000, 59144, 4326, 196, 2741, 5000, 1868, 2345, 1088, 295, 1187947933, 360, etc.):
+**Mainnet contracts** (chains 1, 137, 8453, 42161, 10, 43114, 56, 143, 534352, 100, 42220, 167000, 59144, 4326, 196, 2741, 5000, 1868, 2345, 1088, 1187947933, 360, 4663, 45056, 1776, 16661):
 - Identity Registry: `0x8004A169FB4a3325136EB29fA0ceB6D2e539a432`
 - Reputation Registry: `0x8004BAa17C55a88189AE136b182e5fdA19dE9b63`
+- Validation Registry: `0x8004Cc8439f36fd5F9F049D9fF86523Df6dAAB58` (not in SDK defaults)
 
-**Testnet contracts** (chains 11155111, 84532, 421614, 11155420, 80002, 43113, 97, 10143, 534351, 10200, 11142220, 167013, 6343, 59141, 1952, 11124, 5003, 1946, 48816, 59902, 296, 324705682, 5042002, 11011, etc.):
+**Testnet contracts** (chains 11155111, 84532, 421614, 11155420, 80002, 43113, 97, 10143, 534351, 11142220, 167013, 6343, 59141, 1952, 11124, 5003, 1946, 59902, 296, 324705682, 5042002, 11011, 46630, 6913, 1439, 16602):
 - Identity Registry: `0x8004A818BFB912233c491871b3d84c89A494BD9e`
 - Reputation Registry: `0x8004B663056A597Dffe9eCcC1965A193B7388713`
+- Validation Registry: `0x8004Cb1BF31DAf7788923b405b754f57acEB4272` (not in SDK defaults)
 
 ## Public RPC Endpoints
 
@@ -153,5 +164,9 @@ All chains use deterministic CREATE2 deployment. Two address sets:
 - **MegaETH (4326)**: use the network RPC from your infra provider or local deployment config
 - **Mantle (5000)**: `https://rpc.mantle.xyz`
 - **Metis (1088)**: `https://andromeda.metis.io/?owner=1088`
+- **Robinhood Chain (4663)**: `https://rpc.mainnet.chain.robinhood.com` · testnet (46630): `https://rpc.testnet.chain.robinhood.com/rpc`
+- **Injective (1776)**: `https://sentry.evm-rpc.injective.network` · testnet (1439): `https://k8s.testnet.json-rpc.injective.network`
+- **0G (16661)**: `https://evmrpc.0g.ai` · Galileo testnet (16602): `https://evmrpc-testnet.0g.ai`
+- **Billions (45056)**: `https://billions-rpc.eu-north-2.gateway.fm` (unresponsive in October 2026; contracts confirmed via explorer.billions.network) · testnet (6913): `https://billions-testnet-rpc.eu-north-2.gateway.fm`
 
-For the remaining deployed networks (XLayer, Soneium, GOAT Network, Hedera, SKALE Base, Shape, and related testnets), use the RPC endpoint from your infra provider or the chain's official docs.
+For the remaining deployed networks (XLayer, Soneium, GOAT Network, SKALE Base, Shape, Hedera Testnet, and related testnets), use the RPC endpoint from your infra provider or the chain's official docs.

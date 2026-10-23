@@ -471,7 +471,7 @@ If the user does not confirm, the operation is aborted. No transaction is submit
 |        (ERC-721)          |     |                           |     |                           |
 +---------------------------+     +---------------------------+     +---------------------------+
 | - Agent as NFT (tokenId)  |     | - Feedback signals        |     | - Third-party attestations|
-| - Owner = minter          |     | - Rating: -100 to 100     |     | - Validator signatures    |
+| - Owner = minter          |     | - Value (int128+decimals) |     | - Validator responses     |
 | - Metadata URI (IPFS/HTTP)|     | - Up to 2 tags per entry  |     | - Trust anchors           |
 | - On-chain key-value store|     | - Optional text (IPFS)    |     |                           |
 | - Agent wallet (EIP-712)  |     | - Endpoint-specific       |     |                           |
@@ -501,7 +501,7 @@ Stored on IPFS or HTTP. Contains:
 
 ### Feedback
 
-- Rating value: number from -100 to 100, decimals allowed (e.g. 85, 99.77, -3.2; stored as int128 value + uint8 valueDecimals on-chain)
+- Value: stored on-chain as `int128 value` + `uint8 valueDecimals` (0-18); the protocol sets no range, the meaning depends on the tag. The skill accepts -100 to 100 with decimals (e.g. 85, 99.77, -3.2) as its quality-rating convention
 - Tags: up to 2 free-text tags per feedback entry
 - Text: optional detailed feedback stored on IPFS as a feedback file
 - Endpoint: optional, for endpoint-specific feedback
@@ -527,7 +527,7 @@ Setting an agent wallet requires a typed signature from the target wallet:
 | Base Mainnet | 8453 | Full (registry + subgraph) |
 | Base Sepolia | 84532 | Full (registry + subgraph) |
 
-Additional chains are deployed and can be used with manual configuration (typically `SUBGRAPH_URL`, plus registry overrides only if needed). See [`references/chains.md`](../references/chains.md) for the full list, contract addresses, and notes.
+The contracts are also deployed on 47 more networks (23 mainnets, 24 testnets), usable with manual configuration (typically `SUBGRAPH_URL`, plus registry overrides only if needed). See [`references/chains.md`](../references/chains.md) for the full list, contract addresses, and notes.
 
 ---
 

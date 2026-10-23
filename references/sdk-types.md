@@ -472,5 +472,11 @@ enum EndpointType {
 ### TrustModel
 
 ```typescript
-type TrustModel = 'reputation' | 'crypto-economic' | 'tee-attestation';
+enum TrustModel {
+  REPUTATION = 'reputation',
+  CRYPTO_ECONOMIC = 'crypto-economic',
+  TEE_ATTESTATION = 'tee-attestation',
+}
 ```
+
+Published in the registration file as `supportedTrust` (string values).

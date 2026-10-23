@@ -193,7 +193,7 @@ Run `npx tsx scripts/check-env.ts` to diagnose common issues. It checks:
 **Cause**: The agent's A2A endpoint URL is unreachable or does not serve a valid agent card.
 **Fix**:
 1. Check the endpoint URL with `connect.ts` to verify reachability
-2. The agent card should be served at `<a2a-endpoint>/.well-known/agent.json`
+2. The agent card should be served at `<a2a-endpoint>/.well-known/agent-card.json` (current A2A path). The SDK falls back to the legacy `/.well-known/agent.json` on 404
 3. The server may be down — try again later
 
 ### "Task not found"
@@ -236,7 +236,7 @@ Known discrepancies between the ERC-8004 spec, the SDK implementation, and on-ch
 | Spec Says | Implementation Shows | Recommended |
 |---|---|---|
 | After a write transaction is mined, the data exists on-chain. | Subgraph indexing has eventual consistency. Lag ranges from seconds to minutes depending on chain and indexer load. | After a write, use `handle.waitMined()` to confirm the transaction, then inform the user that search results may take a moment to reflect the change. Do not poll the subgraph in a tight loop. |
-| All chains with deployed contracts can be queried. | Only 5 chains have built-in subgraph support (1, 11155111, 137, 8453, 84532). Other chains require a manual `SUBGRAPH_URL`. Without a subgraph, `searchAgents` and `searchFeedback` will fail. | For chains without a subgraph, use direct chain reads (`sdk.loadAgent`, `sdk.getAgent`) instead of search. Document the limitation to the user. |
+| All chains with deployed contracts can be queried. | Only 5 chains have built-in subgraph support (1, 11155111, 137, 8453, 84532). Other chains require a manual `SUBGRAPH_URL`. Without a subgraph, `searchAgents` and `searchFeedback` will fail. | For chains without a subgraph, use direct chain reads (`sdk.loadAgent`, `sdk.getAgentOwner`, `sdk.getFeedback`) instead of search. `sdk.getAgent` returns the indexed summary, so it needs a subgraph too. Document the limitation to the user. |
 
 ### Feedback Immutability
 
