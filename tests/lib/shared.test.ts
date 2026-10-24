@@ -6,7 +6,7 @@ import {
   parseArgs,
   requireArg,
   parseChainId,
-  parseDecimalInRange,
+  validateFeedbackValue,
   validateAgentId,
   validateAddress,
   validateSignature,
@@ -279,17 +279,41 @@ describe('parseChainId', () => {
   });
 });
 
-describe('parseDecimalInRange', () => {
-  it('parses value within range', () => {
-    expect(parseDecimalInRange('85', 'score', -100, 100)).toBe(85);
+describe('validateFeedbackValue', () => {
+  it.each([
+    ['85', ''],
+    ['-100', ''],
+    ['99.77', 'starred'],
+    ['1', 'reachable'],
+    ['0', 'ownerVerified'],
+    ['99.77', 'uptime'],
+    ['560', 'responseTime'],
+    ['4', 'blocktimeFreshness'],
+    ['560', 'revenues'],
+    ['-3.2', 'tradingYield'],
+    ['12345.678', 'customMetric'],
+    [`0.${'1'.repeat(18)}`, 'customMetric'],
+    [`1${'0'.repeat(38)}`, 'customMetric'],
+  ])('accepts %s for tag1 "%s"', (value, tag1) => {
+    expect(validateFeedbackValue(value, tag1)).toBe(value);
   });
 
-  it('exits when value exceeds range', () => {
-    expect(() => parseDecimalInRange('101', 'score', -100, 100)).toThrow('process.exit(1)');
-  });
-
-  it('exits on non-numeric input', () => {
-    expect(() => parseDecimalInRange('abc', 'score', -100, 100)).toThrow('process.exit(1)');
+  it.each([
+    ['101', ''],
+    ['560', 'starred'],
+    ['0.5', 'reachable'],
+    ['2', 'ownerVerified'],
+    ['100.01', 'uptime'],
+    ['-1', 'successRate'],
+    ['-560', 'responseTime'],
+    ['-1', 'revenues'],
+    ['12abc', ''],
+    ['1e3', 'customMetric'],
+    ['', ''],
+    [`0.${'1'.repeat(19)}`, 'customMetric'],
+    [`1${'0'.repeat(38)}1`, 'customMetric'],
+  ])('rejects %s for tag1 "%s"', (value, tag1) => {
+    expect(() => validateFeedbackValue(value, tag1)).toThrow('process.exit(1)');
   });
 });
 

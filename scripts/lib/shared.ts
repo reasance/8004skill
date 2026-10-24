@@ -83,7 +83,7 @@ export function isMainScript(importMetaUrl: string): boolean {
 
 // ── Script version ──────────────────────────────────────────────────
 
-export const SCRIPT_VERSION = '2.3.3';
+export const SCRIPT_VERSION = '2.4.0';
 
 // ── CLI argument parsing ────────────────────────────────────────────
 
@@ -125,15 +125,63 @@ export function requireChainId(raw: string | undefined): number {
   return parseChainId(raw);
 }
 
-export function parseDecimalInRange(raw: string, name: string, min: number, max: number): number {
-  const val = parseFloat(raw);
-  if (Number.isNaN(val)) {
-    exitWithError(`Invalid --${name}: "${raw}". Must be a number (decimals allowed, e.g. 85, 99.77, -3.2).`);
+/**
+ * Ranges for the tag1 values in the ERC-8004 spec's value/valueDecimals table.
+ * Untagged feedback and `starred` keep the skill's -100..100 quality-rating scale;
+ * any other tag is only bound by what the Reputation Registry accepts.
+ */
+const FEEDBACK_TAG_RANGES: Record<string, { min?: number; max?: number; allowed?: number[] }> = {
+  '': { min: -100, max: 100 },
+  starred: { min: -100, max: 100 },
+  reachable: { allowed: [0, 1] },
+  ownerVerified: { allowed: [0, 1] },
+  uptime: { min: 0, max: 100 },
+  successRate: { min: 0, max: 100 },
+  responseTime: { min: 0 },
+  blocktimeFreshness: { min: 0 },
+  revenues: { min: 0 },
+};
+
+// ReputationRegistry limits: valueDecimals <= 18, |value| <= 1e38 (MAX_ABS_VALUE).
+const MAX_FEEDBACK_DECIMALS = 18;
+const MAX_FEEDBACK_RAW_ABS = 10n ** 38n;
+
+/**
+ * Validate a feedback value before the SDK encodes it as (int128 value, uint8 valueDecimals).
+ * The SDK silently rounds past 18 decimals and clamps past 1e38, so reject those here instead.
+ */
+export function validateFeedbackValue(raw: string, tag1 = ''): string {
+  const value = raw.trim();
+  const match = /^-?(\d+)(?:\.(\d+))?$/.exec(value);
+  if (!match) {
+    exitWithError(`Invalid --value: "${raw}". Must be a decimal number (e.g. 85, 99.77, -3.2, 560).`);
   }
-  if (val < min || val > max) {
-    exitWithError(`--${name} must be between ${min} and ${max}`);
+  const [, intPart, fracPart = ''] = match;
+  if (fracPart.length > MAX_FEEDBACK_DECIMALS) {
+    exitWithError(`--value supports at most ${MAX_FEEDBACK_DECIMALS} decimal places`);
   }
-  return val;
+  if (BigInt(intPart + fracPart) > MAX_FEEDBACK_RAW_ABS) {
+    exitWithError('--value is too large for the Reputation Registry (|value| x 10^decimals must be <= 1e38)');
+  }
+
+  const range = FEEDBACK_TAG_RANGES[tag1];
+  if (!range) return value;
+  const num = Number(value);
+  const label = tag1 ? `tag1 "${tag1}"` : 'feedback without tag1 (quality rating)';
+  if (range.allowed && !range.allowed.includes(num)) {
+    exitWithError(`--value must be ${range.allowed.join(' or ')} for ${label}`);
+  }
+  if (range.min !== undefined && num < range.min) {
+    exitWithError(
+      range.max !== undefined
+        ? `--value must be between ${range.min} and ${range.max} for ${label}`
+        : `--value must be >= ${range.min} for ${label}`,
+    );
+  }
+  if (range.max !== undefined && num > range.max) {
+    exitWithError(`--value must be between ${range.min} and ${range.max} for ${label}`);
+  }
+  return value;
 }
 
 /**

@@ -501,7 +501,7 @@ Stored on IPFS or HTTP. Contains:
 
 ### Feedback
 
-- Value: stored on-chain as `int128 value` + `uint8 valueDecimals` (0-18); the protocol sets no range, the meaning depends on the tag. The skill accepts -100 to 100 with decimals (e.g. 85, 99.77, -3.2) as its quality-rating convention
+- Value: stored on-chain as `int128 value` + `uint8 valueDecimals` (0-18); the protocol sets no range, the meaning depends on the tag. The skill validates the range per tag1 (untagged/`starred` -100 to 100, `uptime` 0-100, `responseTime` ≥ 0, custom tags unbounded; see `references/erc-8004-spec.md`) and rejects values past 18 decimals or 1e38 instead of letting the SDK round or clamp them
 - Tags: up to 2 free-text tags per feedback entry
 - Text: optional detailed feedback stored on IPFS as a feedback file
 - Endpoint: optional, for endpoint-specific feedback

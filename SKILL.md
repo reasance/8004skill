@@ -6,7 +6,7 @@ allowed-tools: "Bash(npx:*) Bash(npm:*) Bash(mkdir:*) Bash(chmod:*) Read"
 compatibility: Requires Node.js 22+, macOS or Linux. Scripts executed via npx tsx.
 metadata:
   author: matteoscurati
-  version: "2.3.3"
+  version: "2.4.0"
   npm:
     package: 8004skill
     postInstall: npm install --omit=dev
@@ -207,7 +207,7 @@ Result: `AgentSummary[]` table (#, Agent ID, Name, MCP, A2A, Description). Offer
 
 **Triggers**: "give feedback", "rate agent", "review agent". Write flow. Best practices: [Reputation.md](https://github.com/erc-8004/best-practices/blob/main/Reputation.md). Star-to-scale: 1★=20…5★=100; negative values below 0. Tags (spec examples): starred, reachable, ownerVerified, uptime, successRate, responseTime, blocktimeFreshness, revenues, tradingYield.
 
-**Input**: Agent ID, value (-100 to 100 — a skill limit; the protocol accepts any signed value with decimals, so tags on other scales such as `responseTime` 560 or `revenues` 560 cannot be submitted with this skill), tags (up to 2), endpoint. Optional off-chain fields (require `--ipfs`): text, mcp-tool/prompt/resource, a2a-skills/context-id/task-id, oasf-skills/domains, proof-of-payment-json.
+**Input**: Agent ID, value (decimal; encoded as value + valueDecimals), tags (up to 2), endpoint. Allowed range depends on tag1: none or `starred` → -100 to 100 (quality rating); `reachable`/`ownerVerified` → 0 or 1; `uptime`/`successRate` → 0 to 100 (%); `responseTime` (ms), `blocktimeFreshness` (blocks), `revenues` → ≥ 0; `tradingYield` and custom tags → any value. Always at most 18 decimals. Examples: uptime 99.77% → `--value 99.77 --tag1 uptime`; 560 ms → `--value 560 --tag1 responseTime`. Optional off-chain fields (require `--ipfs`): text, mcp-tool/prompt/resource, a2a-skills/context-id/task-id, oasf-skills/domains, proof-of-payment-json.
 
 Script: `feedback.ts` — Required: `--agent-id`, `--chain-id`, `--rpc-url`, `--value`. Optional: `--tag1`, `--tag2`, `--endpoint`, `--ipfs`, `--text`, `--mcp-tool`, `--mcp-prompt`, `--mcp-resource`, `--a2a-skills`, `--a2a-context-id`, `--a2a-task-id`, `--oasf-skills`, `--oasf-domains`, `--proof-of-payment-json`.
 

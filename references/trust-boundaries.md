@@ -20,6 +20,8 @@ Most agents currently declare only `reputation`. The other models are available 
 
 See the "Trust Labels" table in `SKILL.md` for the full derivation rules (emoji, label, condition thresholds) and output format.
 
+The thresholds assume quality ratings on the -100..100 scale. The reputation summary averages **all** feedback, so measurement tags on other scales (`responseTime` in ms, `revenues`, `reachable` 0/1) distort `averageValue`. When `reputation.ts` shows such tags in the feedback list, derive the label from the quality feedback only (`--tags starred`, or untagged entries) and say so.
+
 ## Data Trust Boundaries
 
 | Source | Trust Level | Notes |

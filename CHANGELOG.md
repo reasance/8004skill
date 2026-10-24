@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0] - 2026-10-24
+
+### Added
+- Feedback values on the ERC-8004 spec's scales. `feedback.ts --value` now validates the range per `--tag1` instead of always requiring -100..100:
+  - untagged and `starred`: -100 to 100 (unchanged)
+  - `reachable`, `ownerVerified`: 0 or 1
+  - `uptime`, `successRate`: 0 to 100
+  - `responseTime`, `blocktimeFreshness`, `revenues`: ≥ 0
+  - `tradingYield` and custom tags: any value
+
+  Decimals are still encoded by the SDK as `value` + `valueDecimals`. In 2.3.x, metrics such as `responseTime 560` or `revenues 560` were rejected.
+
+### Fixed
+- **WalletConnect pairing and every WalletConnect-signed write failed** with `EthereumProvider.init is not a function`. Node resolves `@walletconnect/ethereum-provider` to its CommonJS build, where the default import is the whole `module.exports` object, not the provider class. `scripts/lib/walletconnect.ts` now uses the named `EthereumProvider` export, which both builds provide. The test mock had copied the broken default-import shape, so the suite did not catch it. Reproduced on Node 24 with ethereum-provider 2.23.4, 2.23.8 and 2.26.0. Headless `PRIVATE_KEY` signing was not affected.
+- `feedback.ts` accepted malformed values such as `12abc` (read as 12). It now requires a plain decimal, and rejects values with more than 18 decimals or above the registry's 1e38 bound instead of letting the SDK silently round or clamp them.
+- `feedback.ts` checks the value before opening the WalletConnect session, so an invalid value no longer prompts the wallet first.
+- `references/troubleshooting.md` listed "feedback value out of range" as a contract revert; the contract has no such range. Replaced with the real revert (self-feedback by the owner or an operator).
+- `references/trust-boundaries.md`: trust labels assume -100..100 quality ratings; when an agent also has measurement feedback (`responseTime`, `revenues`, …), derive the label from quality feedback only.
+
 ## [2.3.3] - 2026-10-23
 
 Documentation-only release: the references the agent reads were re-checked against EIP-8004 (Draft, unchanged since 2026-01-25), `erc-8004/erc-8004-contracts` `master` (unchanged since 2026-03-06), on-chain bytecode, and agent0-sdk 1.7.1 (still the latest release). No script behavior changes.

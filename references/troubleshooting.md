@@ -44,7 +44,7 @@ Common errors and their solutions, organized by category.
 **Fix**: Check the revert reason in the error message. Common causes:
 - Not the agent owner (for update/transfer/wallet operations)
 - Agent ID doesn't exist on the specified chain
-- Feedback value out of range (-100 to 100)
+- Self-feedback: the signer is the agent owner or an approved operator
 
 ### Gas estimation failed
 **Cause**: Transaction would revert if sent — the RPC simulated it and it failed.

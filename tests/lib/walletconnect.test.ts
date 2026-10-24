@@ -18,7 +18,7 @@ vi.mock('qrcode-terminal', () => ({
 }));
 
 vi.mock('@walletconnect/ethereum-provider', () => ({
-  default: { init: vi.fn() },
+  EthereumProvider: { init: vi.fn() },
 }));
 
 const {

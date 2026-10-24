@@ -2,7 +2,10 @@ import { existsSync, readFileSync, mkdirSync, lstatSync, fstatSync, openSync, wr
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { IKeyValueStorage } from '@walletconnect/keyvaluestorage';
-import EthereumProvider from '@walletconnect/ethereum-provider';
+// Node resolves this package to its CJS build, where the default import is the whole
+// module.exports object, so the class must come from the named export.
+import { EthereumProvider as WcEthereumProvider } from '@walletconnect/ethereum-provider';
+import type EthereumProvider from '@walletconnect/ethereum-provider';
 import type { EthereumProviderOptions } from '@walletconnect/ethereum-provider';
 import qrcode from 'qrcode-terminal';
 
@@ -140,7 +143,7 @@ export async function initWalletConnectProvider(opts: {
     storageOptions: { database: WC_STORAGE_FILE },
   };
 
-  const provider = await EthereumProvider.init(providerOpts);
+  const provider = await WcEthereumProvider.init(providerOpts);
 
   // If no active session, trigger pairing and show QR in terminal
   if (!provider.session) {
@@ -223,7 +226,7 @@ export async function disconnectSession(): Promise<void> {
   const sessionInfo = getSessionInfo();
   const chainId = sessionInfo.chainId ?? 1;
   const storage = new FileSystemStorage();
-  const provider = await EthereumProvider.init({
+  const provider = await WcEthereumProvider.init({
     projectId: resolveProjectId(),
     chains: [chainId],
     showQrModal: false,

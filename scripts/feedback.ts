@@ -16,7 +16,7 @@ import {
   parseArgs,
   requireArg,
   requireChainId,
-  parseDecimalInRange,
+  validateFeedbackValue,
   validateAgentId,
   createSdk,
   extractIpfsConfig,
@@ -135,6 +135,13 @@ async function main() {
     validateIpfsEnv(ipfsConfig);
   }
 
+  const tag1 = args['tag1'] || '';
+  const tag2 = args['tag2'] || '';
+  const endpoint = args['endpoint'] || '';
+
+  // Range depends on tag1; the SDK encodes the decimal string as (value, valueDecimals)
+  const valueRaw = validateFeedbackValue(requireArg(args, 'value', 'feedback value'), tag1);
+
   const readOnlySdk = createSdk({
     chainId,
     rpcUrl,
@@ -156,14 +163,6 @@ async function main() {
   });
 
   emitWalletPrompt();
-
-  // Validate the value as a decimal in range; the SDK accepts the raw string for encoding
-  const valueRaw = requireArg(args, 'value', 'feedback value');
-  parseDecimalInRange(valueRaw, 'value', -100, 100);
-
-  const tag1 = args['tag1'] || '';
-  const tag2 = args['tag2'] || '';
-  const endpoint = args['endpoint'] || '';
 
   // Pass the raw string to the SDK — it handles encoding (value + valueDecimals)
   const { result: feedback, txHash } = await submitAndWait(
